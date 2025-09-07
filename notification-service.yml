@@ -1,0 +1,65 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: notification-service
+
+  kafka:
+    bootstrap-servers: localhost:9092
+
+    consumer:
+      group-id: notification-service
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: ru.naragas.notificationservice.dto
+        spring.json.value.default.type: ru.naragas.notificationservice.dto.UserEventDTO
+
+    listener:
+      ack-mode: record
+      concurrency: 1
+
+    properties:
+      allow.auto.create.topics: true
+
+  mail:
+    host: sandbox.smtp.mailtrap.io
+    port: 2525
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+
+app:
+  kafka:
+    topics:
+      user-events: user-events
+
+
+mail:
+  from: noreply@naragas.ru
+  subjects:
+    created: Account created
+    deleted: Account deleted
+  texts:
+    created: Hello. Your account has been created!
+    deleted: Hello. Your account has been deleted!
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
