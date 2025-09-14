@@ -1,0 +1,62 @@
+server:
+  port: ${NOTIFY_PORT:8081}
+
+spring:
+  application:
+    name: notification-service
+
+  kafka:
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:kafka:9092}
+
+    consumer:
+      group-id: ${SPRING_KAFKA_CONSUMER_GROUP_ID:notification-service}
+      auto-offset-reset: ${SPRING_KAFKA_CONSUMER_AUTO_OFFSET_RESET:earliest}
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: ru.naragas.notificationservice.dto
+        spring.json.value.default.type: ru.naragas.notificationservice.dto.UserEventDTO
+
+    listener:
+      ack-mode: ${SPRING_KAFKA_LISTENER_ACK_MODE:record}
+      concurrency: ${SPRING_KAFKA_LISTENER_CONCURRENCY:1}
+
+  mail:
+    host: ${MAILTRAP_HOST:sandbox.smtp.mailtrap.io}
+    port: ${MAILTRAP_PORT:2525}
+    username: ${MAILTRAP_USER}
+    password: ${MAILTRAP_PASS}
+
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+
+app:
+  kafka:
+    topics:
+      user-events: ${APP_KAFKA_TOPIC_USER_EVENTS:user-events}
+
+
+mail:
+  from: ${MAILTRAP_FROM:noreply@naragas.ru}
+  subjects:
+    created: ${MAIL_SUBJECT_CREATED:Account created}
+    deleted: ${MAIL_SUBJECT_DELETED:Account deleted}
+  texts:
+    created: ${MAIL_TEXT_CREATED:Hello. Your account has been created!}
+    deleted: ${MAIL_TEXT_DELETED:Hello. Your account has been deleted!}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://eureka-server:8761/eureka}

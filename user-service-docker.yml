@@ -1,0 +1,49 @@
+server:
+  port: ${USER_PORT:8082}
+
+spring:
+  application:
+    name: user-service
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://postgres:5432/microservice_db}
+    username: ${SPRING_DATASOURCE_USERNAME:javauser}
+    password: ${SPRING_DATASOURCE_PASSWORD:javauser}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
+    open-in-view: false
+
+  kafka:
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:kafka:9092}
+
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+      properties:
+        spring.json.add.type.headers: ${SPRING_KAFKA_PRODUCER_PROPERTIES_SPRING_JSON_ADD_TYPE_HEADERS:false}
+        acks: ${SPRING_KAFKA_PRODUCER_PROPERTIES_ACKS:all}
+        retries: ${SPRING_KAFKA_PRODUCER_PROPERTIES_RETRIES:5}
+    template:
+      default-topic: ${APP_KAFKA_TOPIC_USER_EVENTS:user-events}
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info
+
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://eureka-server:8761/eureka}
+
+app:
+  kafka:
+    topics:
+      user-events: ${APP_KAFKA_TOPIC_USER_EVENTS:user-events}
