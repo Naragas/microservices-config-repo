@@ -41,7 +41,7 @@ resilience4j:
   timelimiter:
     instances:
       notificationCb:
-        timeout-duration: ${NOTIFICATION_CB_TIMEOUT=8s}
+        timeout-duration: ${NOTIFICATION_CB_TIMEOUT:8s}
       userCb:
         timeout-duration: ${USER_CB_TIMEOUT:4s}
 
